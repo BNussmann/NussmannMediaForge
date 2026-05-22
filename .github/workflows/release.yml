@@ -1,0 +1,78 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows app
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Build app
+        shell: pwsh
+        run: .\build_release.ps1
+
+      - name: Package ZIP
+        shell: pwsh
+        run: Compress-Archive -Path .\release-dist\NussmannMediaForge\* -DestinationPath .\NussmannMediaForge-windows.zip -Force
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: NussmannMediaForge-windows
+          path: NussmannMediaForge-windows.zip
+
+      - name: Publish rolling latest release
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f latest $env:GITHUB_SHA
+          git push -f origin latest
+
+          $notes = "Automated Windows build for commit $env:GITHUB_SHA."
+          if (gh release view latest *> $null) {
+            gh release upload latest .\NussmannMediaForge-windows.zip --clobber
+            gh release edit latest --title "Nussmann MediaForge latest" --notes $notes --prerelease
+          } else {
+            gh release create latest .\NussmannMediaForge-windows.zip --title "Nussmann MediaForge latest" --notes $notes --prerelease --target $env:GITHUB_SHA
+          }
+
+      - name: Publish versioned release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if (gh release view $env:RELEASE_TAG *> $null) {
+            gh release upload $env:RELEASE_TAG .\NussmannMediaForge-windows.zip --clobber
+          } else {
+            gh release create $env:RELEASE_TAG .\NussmannMediaForge-windows.zip --title "Nussmann MediaForge $env:RELEASE_TAG" --generate-notes
+          }
