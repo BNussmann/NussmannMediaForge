@@ -167,6 +167,10 @@ git push -u origin main
 
 After pushing to `main` or `master`, GitHub Actions builds the Windows ZIP and attaches it to the `latest` release automatically.
 
+## AI Assistance Disclosure
+
+This project was created with the assistance of artificial intelligence. AI tools helped with planning, code generation, documentation, refactoring, and release automation. The project is maintained and reviewed by the repository owner.
+
 ## Legal Notice
 
 Only use this app with discs and media you legally own and are allowed to back up in your jurisdiction. MakeMKV, MKVToolNix, HandBrake, and TMDb are separate projects with their own licenses and terms.
