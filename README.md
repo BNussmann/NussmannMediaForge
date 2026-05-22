@@ -114,7 +114,7 @@ Tool progress and output are also shown in the Run Log panel.
 
 This repository includes a GitHub Actions workflow that builds the Windows app automatically.
 
-- Every push to `main` builds `NussmannMediaForge-windows.zip` and uploads it to a rolling `latest` GitHub Release.
+- Every push to `main` or `master` builds `NussmannMediaForge-windows.zip` and uploads it to a rolling `latest` GitHub Release.
 - Every pushed tag matching `v*` builds the app and creates or updates a versioned release for that tag.
 - You can also run the workflow manually from the GitHub Actions tab.
 
@@ -165,7 +165,7 @@ git branch -M main
 git push -u origin main
 ```
 
-After pushing to `main`, GitHub Actions builds the Windows ZIP and attaches it to the `latest` release automatically.
+After pushing to `main` or `master`, GitHub Actions builds the Windows ZIP and attaches it to the `latest` release automatically.
 
 ## Legal Notice
 

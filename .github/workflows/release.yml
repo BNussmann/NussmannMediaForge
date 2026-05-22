@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
     tags:
       - "v*"
   workflow_dispatch:
@@ -46,7 +47,7 @@ jobs:
           path: NussmannMediaForge-windows.zip
 
       - name: Publish rolling latest release
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
